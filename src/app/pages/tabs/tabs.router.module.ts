@@ -22,7 +22,8 @@ const routes: Routes = [
 					{
 						path: '',
 						loadChildren: '../tab2/tab2.module#Tab2PageModule'
-					}
+					},
+					{ path: 'map/:geo', loadChildren: '../map/map.module#MapPageModule' }
 				]
 			},
 			{
