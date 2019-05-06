@@ -73,32 +73,47 @@ export class LocalDataService {
 
 	private async createFile(recordData: string) {
 		try {
-			const exists = await this.fileCtrl.checkFile(this.fileCtrl.dataDirectory, backupfilename);
-			if (!exists) await this.fileCtrl.createFile(this.fileCtrl.dataDirectory, backupfilename, false);
+			try {
+				await this.fileCtrl.checkFile(this.fileCtrl.dataDirectory, backupfilename);
+			} catch (er) {
+				console.log(er);
+
+				await this.fileCtrl.createFile(this.fileCtrl.dataDirectory, backupfilename, false);
+			}
+			console.log(`${this.fileCtrl.dataDirectory}/${backupfilename}`);
 
 			await this.fileCtrl.writeExistingFile(this.fileCtrl.dataDirectory, backupfilename, recordData);
 			return `${this.fileCtrl.dataDirectory}/${backupfilename}`;
 		} catch (error) {
+			console.log('createfile error');
+
 			throw error;
 		}
 	}
 	private async sendEmail(filePath: string) {
-		const available = await this.emailComposer.isAvailable();
+		try {
+			// try {
+			// 	await this.emailComposer.isAvailable();
+			// } catch (error) {
+			// 	console.log(error);
+			// 	throw new Error('No email composer available');
+			// }
 
-		if (available) {
 			const email = {
-				to: 'jhon@doe.com',
+				to: 'your@email.com',
 				attachments: [ filePath ],
 				subject: 'QRScanner Backup',
 				body: 'Thanks for using QRScanner (alpha version) from <strong>Rosswell inc.</strong>',
 				isHtml: true
 			};
-
 			try {
 				await this.emailComposer.open(email);
 			} catch (error) {
+				console.log('emailcomposer error');
 				throw error;
 			}
-		} else throw new Error('No email composer available');
+		} catch (error) {
+			throw error;
+		}
 	}
 }
